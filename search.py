@@ -5,6 +5,7 @@ import csv
 import pandas as pd
 import xlsxwriter as xlsx
 
+
 # Tasks
 
 ## Convert the excel file to a csv file
@@ -26,11 +27,9 @@ def uploadToSolr(source = 'library.csv', url = 'http://localhost:8983/solr/mycor
         r = http.request('POST', url, body=data.encode('utf-8'), headers={'Content-Type': 'application/csv'})
     return
 
-
-
 ## Implement pairing search: For each pairs of (An, Bn), search for a tuplet of (A, B) in the json file which contains the word An in A and the word Bn in B. Return B as the result.
 ## Save the result in a data list
-def findExamples(wordSource = 'output.xlsx', url = 'http://localhost:8983/solr/mycore/select?q='):
+def findExamples(wordSource = 'output.xlsx', url = 'http://localhost:8983/solr/mycore/select?indent=true&q.op=AND&q='):
     wordData = []
     resultList = []
 
@@ -58,71 +57,58 @@ def findExamples(wordSource = 'output.xlsx', url = 'http://localhost:8983/solr/m
     for wordPair in wordData:
         word1 = wordPair[0]
         word2 = wordPair[1]
+        # Replace space with these string below to enable phrasal searches.
+        word1 = word1.replace(' ', '*\n_Vietnamese:*')
+        word2 = word2.replace(' ', '*\nBahnar:*')
         matchVietList = []
         matchBahnarList = []
-        print ("Looking for pair: ", word1.encode("utf8"), word2.encode("utf8"))
         # CSV file
         # Search for substring word1 in the Vietnamese column, save the corresponding Bahnar column to matchVietList
-        r = http.request('GET', f'{url}_Vietnamese%3A*{qoute(word1)}*')
+        r = http.request('GET', f'{url}_Vietnamese%3A*{word1}*&fl=_Vietnamese,Bahnar&indent=true&wt=csv&useParams=')
+        print(f'{url}_Vietnamese%3A*{qoute(word1)}*&fl=_Vietnamese,Bahnar&indent=true&wt=csv&useParams=')
         data = csv.reader(r.data.decode('utf-8').split('\n'))
+        
         for row in data:
-            if row:
-                matchVietList.append(row[0])
+            if row and '_Vietnamese' not in row:
+                matchVietList.append(row)
+
         # Search for substring word2 in the Bahnar column, save the corresponding Vietnamese column to matchBahnarList
-        r = http.request('GET', f'{url}Bahnar%3A*{qoute(word2)}*')
+        r = http.request('GET', f'{url}Bahnar%3A*{word2}*&fl=_Vietnamese,Bahnar&indent=true&wt=csv&useParams=')
+        print(f'{url}Bahnar%3A*{qoute(word2)}*&fl=_Vietnamese,Bahnar&indent=true&wt=csv&useParams=')
         data = csv.reader(r.data.decode('utf-8').split('\n'))
+        
         for row in data:
-            if row:
-                matchBahnarList.append(row[0])
-        
-        # Empty file matchVietList and matchBahnarList:
-        open('matchVietList.txt', 'w').close()
-        open('matchBahnarList.txt', 'w').close()
-                
-        #Save matchVietList and matchBahnarList to a txt file (for testing purpose)
-        with open('matchVietList.txt', 'a', encoding="utf-8") as file:
-            for line in matchVietList:
-                file.write(line + '\n')
-        with open('matchBahnarList.txt', 'a', encoding="utf-8") as file:
-            for line in matchBahnarList:
-                file.write(line + '\n')
-                        
-        
-        
-        resultBahnar = ''
-        resultViet = ''
-        result = ['A', 'B']
-        # For each line in matchVietList.txt, search for the corresponding line in matchBahnarList.txt. If found, append the result to resultList
-        with open('matchVietList.txt', 'r', encoding="utf-8") as file:
-            for line in file:
-                with open('matchBahnarList.txt', 'r', encoding="utf-8") as file2:
-                    for line2 in file2:
-                        if line == line2 and "Bahnar" in line:
-                            resultBahnar = line2
-                            resultViet = line
-                            result = [resultViet, resultBahnar]
-                            print("Result found")
-                            break
-                if result:  
-                    break   
-        
-        # Save result to a txt file (for testing purpose)
-        with open('result.txt', 'a', encoding="utf-8") as file:
-            file.write(result + '\n')
+            if row and '_Vietnamese' not in row:
+                matchBahnarList.append(row)
+
+        # Find the intersection of matchVietList and matchBahnarList
+        result = 'Not found'
+        for key in matchVietList:
+            if key in matchBahnarList:
+                result = key
+                break
         
         # Append result to resultList
         resultList.append(result)
-        print("Added result: ", result.encode("utf8"))
     return resultList
 
-## Save the resultList to a target xlsx file
+# Save the result list to a xlsx file
 def saveResult(resultList, target = 'target.xlsx'):
     workbook = xlsx.Workbook(target)
     worksheet = workbook.add_worksheet()
-    for row in range(len(resultList)):
-        worksheet.write(row, 0, resultList[row])
+    row = 0
+    col = 0
+
+    for result in resultList:
+        if result == 'Not found':
+            worksheet.write(row, col, result)
+        else:
+            worksheet.write(row, col, result[0])
+            worksheet.write(row, col+1, result[1])
+        row += 1
     workbook.close()
     return
+
 
 deleteQuery()
 uploadToSolr()
