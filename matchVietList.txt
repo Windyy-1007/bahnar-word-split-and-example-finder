@@ -1,0 +1,20 @@
+{
+  "responseHeader":{
+    "status":0
+    "QTime":3
+    "params":{
+      "q":"_Vietnamese:*một*"
+    }
+  }
+  "response":{
+    "numFound":1
+    "start":0
+    "numFoundExact":true
+    "docs":[{
+      "Bahnar":["one ara"]
+      "id":"d73050de-57ea-4d47-af90-042eae49c4d2"
+      "_Vietnamese":["một con vịt"]
+      "_version_":1809713655619518504
+    }]
+  }
+}
