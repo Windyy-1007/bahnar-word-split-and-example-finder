@@ -61,6 +61,42 @@ def compare_excel(file, output_file):
 
     workbook.close()
 
+def separate_sentences(file, output_file):
+    data = [
+        ['A', 'B'],
+    ]
+    df1 = pd.read_excel(file)
+    # For each row, check 3 cells
+    for row in range(df1.shape[0]):
+        for col in range(df1.shape[1] - 1):
+            if df1.iat[row, col+1] == None:
+                continue
+            # Make sure cell 1, 2 are strings
+            cell1 = str(df1.iat[row, col]).split()
+            cell2 = str(df1.iat[row, col+1]).split()
+            # If cell2 is empty, skip to next row
+            if not cell2.strip() or not cell1.strip():
+                continue
+            # Separate cell1 and cell2 by period
+            cell1_list = cell1.split('.')
+            cell2_list = cell2.split('.')
+            # Add row's content to data
+            for i in range(0, len(cell1_list)):
+                if [cell1_list[i]] == '':
+                    continue
+                data.append([cell1_list[i], cell2_list[i]])
+                
+
+    # Write data to output file using xlsxwriter
+    workbook = xlsx.Workbook(output_file)
+    worksheet = workbook.add_worksheet()
+
+    for row_num, row_data in enumerate(data):
+        for col_num, cell_data in enumerate(row_data):
+            worksheet.write(row_num, col_num, ' '.join(cell_data))
+
+    workbook.close()
+
 file1 = r"C:\Projects\URA\URA-word-seperator\input.xlsx"
 output_file = r"C:\Projects\URA\URA-word-seperator\output.xlsx"
 
