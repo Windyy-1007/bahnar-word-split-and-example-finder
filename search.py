@@ -14,6 +14,7 @@ def convertToCSV(source = 'library.xlsx', target = 'library.csv'):
     df.to_csv(target, index=False, encoding='utf-8')
     return
 
+## Delete query
 def deleteQuery(url = 'http://localhost:8983/solr/mycore/update?commit=true'):
     http = PoolManager()
     r = http.request('POST', url, body=b'<delete><query>*:*</query></delete>', headers={'Content-Type': 'text/xml'})
@@ -81,15 +82,23 @@ def findExamples(wordSource = 'output.xlsx', url = 'http://localhost:8983/solr/m
             if row and '_Vietnamese' not in row:
                 matchBahnarList.append(row)
 
+        # Convert word1 and word2 back to normal
+        word1 = word1.replace('*\n_Vietnamese:*', ' ')
+        word2 = word2.replace('*\nBahnar:*', ' ')
+
         # Find the intersection of matchVietList and matchBahnarList
-        result = 'Not found'
+        result = [word1, word2, 'N/a', 'N/a']
         for key in matchVietList:
             if key in matchBahnarList:
-                result = key
+                result = [word1, word2, key[0], key[1]]
+                result[2] = result[2].replace('\,',',')
+                result[3] = result[3].replace('\,',',')
                 break
         
         # Append result to resultList
         resultList.append(result)
+
+        # Create an ulitmate list that contains word1, word2 and result list
     return resultList
 
 # Save the result list to a xlsx file
@@ -100,11 +109,10 @@ def saveResult(resultList, target = 'target.xlsx'):
     col = 0
 
     for result in resultList:
-        if result == 'Not found':
-            worksheet.write(row, col, result)
-        else:
-            worksheet.write(row, col, result[0])
-            worksheet.write(row, col+1, result[1])
+        worksheet.write(row, col, result[0])
+        worksheet.write(row, col+1, result[1])
+        worksheet.write(row, col+2, result[2])
+        worksheet.write(row, col+3, result[3])
         row += 1
     workbook.close()
     return

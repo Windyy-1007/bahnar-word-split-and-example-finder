@@ -72,18 +72,22 @@ def separate_sentences(file, output_file):
             if df1.iat[row, col+1] == None:
                 continue
             # Make sure cell 1, 2 are strings
-            cell1 = str(df1.iat[row, col]).split()
-            cell2 = str(df1.iat[row, col+1]).split()
+            cell1 = str(df1.iat[row, col])
+            cell2 = str(df1.iat[row, col+1])
             # If cell2 is empty, skip to next row
-            if not cell2.strip() or not cell1.strip():
+            if not cell2 or not cell1:
                 continue
             # Separate cell1 and cell2 by period
-            cell1_list = cell1.split('.')
-            cell2_list = cell2.split('.')
+            cell1_list = cell1.split('. ')
+            cell2_list = cell2.split('. ')
             # Add row's content to data
             for i in range(0, len(cell1_list)):
                 if [cell1_list[i]] == '':
                     continue
+                if [cell2_list[i]] == '':
+                    continue
+                cell1_list[i] = check_space(cell1_list[i])
+                cell2_list[i] = check_space(cell2_list[i])
                 data.append([cell1_list[i], cell2_list[i]])
                 
 
@@ -93,12 +97,12 @@ def separate_sentences(file, output_file):
 
     for row_num, row_data in enumerate(data):
         for col_num, cell_data in enumerate(row_data):
-            worksheet.write(row_num, col_num, ' '.join(cell_data))
+            worksheet.write(row_num, col_num, ''.join(cell_data))
 
     workbook.close()
 
-file1 = r"C:\Projects\URA\URA-word-seperator\input.xlsx"
-output_file = r"C:\Projects\URA\URA-word-seperator\output.xlsx"
+file1 = r"D:\Projects\bahnar-word-split-and-example-finder\input.xlsx"
+output_file = r"D:\Projects\bahnar-word-split-and-example-finder\output.xlsx"
 
 compare_excel(file1, output_file)
 check_duplicate_rows(output_file)
