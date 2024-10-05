@@ -101,8 +101,8 @@ def separate_sentences(file, output_file):
 
     workbook.close()
 
-file1 = r"D:\Projects\bahnar-word-split-and-example-finder\input.xlsx"
-output_file = r"D:\Projects\bahnar-word-split-and-example-finder\output.xlsx"
+file1 = r"C:\Projects\URA\URA-word-seperator\bahnar-word-split-and-example-finder\input.xlsx"
+output_file = r"C:\Projects\URA\URA-word-seperator\bahnar-word-split-and-example-finder\output.xlsx"
 
 compare_excel(file1, output_file)
 check_duplicate_rows(output_file)

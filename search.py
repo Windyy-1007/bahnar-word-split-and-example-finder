@@ -56,7 +56,8 @@ def findExamples(wordSource = 'output.xlsx', url = 'http://localhost:8983/solr/m
     
     http = PoolManager()
     for wordPair in wordData:
-        word1 = wordPair[0]
+        #word1 = wordPair[0]
+        word1 = ' '
         word2 = wordPair[1]
         # Replace space with these string below to enable phrasal searches.
         word1 = word1.replace(' ', '*\n_Vietnamese:*')
@@ -91,8 +92,8 @@ def findExamples(wordSource = 'output.xlsx', url = 'http://localhost:8983/solr/m
         for key in matchVietList:
             if key in matchBahnarList:
                 result = [word1, word2, key[0], key[1]]
-                result[2] = result[2].replace('\,',',')
-                result[3] = result[3].replace('\,',',')
+                result[2] = result[2].replace('\\,',',')
+                result[3] = result[3].replace('\\,',',')
                 break
         
         # Append result to resultList
@@ -117,8 +118,10 @@ def saveResult(resultList, target = 'target.xlsx'):
     workbook.close()
     return
 
-
-deleteQuery()
-uploadToSolr()
-saveResult(findExamples(), 'target.xlsx')
-print('Done')
+def search(library='library/Từ điển mức câu_Kon Tum.csv', input='input/Từ điển mức từ_Kon Tom (22.9.2024).xlsx', target='output/Output_KonTum.xlsx'):
+    deleteQuery()
+    uploadToSolr(library)
+    resultList = findExamples(input)
+    saveResult(resultList, target)
+    
+search()
