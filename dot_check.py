@@ -4,8 +4,8 @@ import xlsxwriter as xlsx
 # Enter the path to the input file and the output file
 # Then run
 
-inputfile = r'library/Từ điển mức câu_Gia Lai.csv'
-outputfile = r'output/Gia Lai.xlsx'
+inputfile = r'library/Từ điển mức câu_Kon Tum.csv'
+outputfile = r'output/KonTum.xlsx'
 InputdataType = 'csv'
 
 def check_space(word):
@@ -47,6 +47,11 @@ def dataFromXLSX(file):
         for col in range(df1.shape[1] - 2):
             if df1.iat[row, col+1] == None:
                 continue
+            # If cell2 is empty, skip to next row
+            if not cell1.strip():
+                cell1 += '[Sadly empty cell]'
+            if not cell2.strip():
+                cell2 += '[Sadly empty cell]'
             # Make sure cell 1, 2, 3 are strings
             cell1 = str(df1.iat[row, col])
             cell2 = str(df1.iat[row, col+1])
