@@ -6,10 +6,10 @@ import sys
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-nameFile = 'Kuol lom bri_231-307.xlsx'
-inputfile = r'SuThi/' + nameFile
-sepTopicType = 1
-outputfileXLSX = r'SuThi/' + r'Sepearated_' + nameFile 
+nameFile = 'Kinh Thanh Ba Na_578-660.xlsx'
+inputfile = r'KinhThanh/' + nameFile
+sepTopicType = 5
+outputfileXLSX = r'MERGE/' + r'Sepearated_' + nameFile 
 
 # Type -1: Hopeless: Input: Bahnar, Vietnamese --> Output: Bahnar, Vietnamese, linkSource, '0' 
 # Type 0: Input: Chapters, Num, Bahnar, Vietnamese --> Output: Bahnar, Vietnamese, linkSource, Chapter
@@ -187,15 +187,16 @@ def dataFromXLSX_type5(file):
     for row in sheet.iter_rows(values_only=False):
         cell1 = str(row[0].value)
         cell2 = str(row[1].value)
+        cell3 = str(row[2].value)
         if not cell1.strip() or cell1 == 'None':
             cell1 = ' '
-        if not cell2.strip() or cell2 == 'None':
+        if not cell2.strip() or cell2 == 'None' or not cell3.strip() or cell3 == 'None':
             continue
         if cell1 == '1':
             chapter = cell2
         else:
             chapter = '-'
-        data.append([chapter, '-', cell1, cell2])
+        data.append([chapter, '-', cell2, cell3])
     return data
 
     
