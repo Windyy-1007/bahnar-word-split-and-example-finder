@@ -43,7 +43,7 @@ def enhanceWord(word):
 
 def enhanceFile(inputFile):
     data = [
-        ['Bahnar', 'Vietnamese', 'Source', 'Chapter'],
+        ['Bahnar', 'Vietnamese', 'Source'],
     ]
     df1 = pd.read_excel(inputFile)
     for row in range(df1.shape[0]):
@@ -67,7 +67,7 @@ def enhanceFile(inputFile):
             if not cell4.strip() or cell4 == 'nan':
                 cell4 = ' '
             
-            data.append([enhanceWord(cell1), enhanceWord(cell2), enhanceWord(cell3), enhanceWord(cell4)])
+            data.append([enhanceWord(cell1), enhanceWord(cell2), enhanceWord(cell3) + ' | ' + enhanceWord(cell4)])
             print('Enhanced row:', data[-1])
     return data
 

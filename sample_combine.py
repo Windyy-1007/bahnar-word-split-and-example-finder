@@ -1,7 +1,7 @@
 import pandas as pd
 import xlsxwriter as xlsx
 
-inputfile = 'library/Từ điển mức câu_Gia Lai.csv'
+inputfile = 'library/Từ điển mức câu_Gia Lai (enhanced).csv'
 outputfileXLSX = 'output/GiaLai.xlsx'
 outputfileCSV = 'output/GiaLai.csv'
 

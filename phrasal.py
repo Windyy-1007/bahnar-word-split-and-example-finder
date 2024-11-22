@@ -7,8 +7,8 @@ def check_duplicate_rows(file):
     df.to_excel(file, index=False)
 
 def check_space(word):
-    if word[0] == ' ':
-        return word[1:]
+    if word[0] == ' ' or word[0] == ',' or word[0] == '.' or word[0] == '?' or word[0] == '!':
+        return check_space(word[1:])
     return word
 
 def check_empty_cells(file):
